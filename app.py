@@ -119,8 +119,7 @@ with t1:
         "Missing%": (miss/len(df_raw)*100).round(1).values,
         "Unique":   df_raw.nunique().values,
     }).reset_index(drop=True)
-    st.dataframe(quality.style.background_gradient(subset=["Missing%"], cmap="YlOrRd"),
-                 use_container_width=True)
+    st.dataframe(quality, use_container_width=True)
 
     st.markdown("---")
     st.markdown("**Apply cleaning**")
@@ -192,13 +191,7 @@ with t2:
     c3.metric("Missing",       int(df_raw[nc].isnull().sum().sum()))
     c4.metric("Skewed (>1)",   sum(abs(df_raw[c].skew())>1 for c in nc))
 
-    st.dataframe(
-        desc.style
-            .background_gradient(subset=["mean","std"], cmap="Blues")
-            .background_gradient(subset=["skewness"], cmap="RdBu_r", vmin=-3, vmax=3)
-            .format("{:.3f}"),
-        use_container_width=True
-    )
+    st.dataframe(desc.style.format("{:.3f}"), use_container_width=True)
 
     st.markdown("---")
     st.markdown("**Distributions**")
@@ -527,8 +520,7 @@ with t6:
 
     # 2. Summary stats
     st.markdown("### 2. Summary Statistics")
-    st.dataframe(desc2.style.background_gradient(subset=["mean","std"],cmap="Blues")
-                            .format("{:.3f}"), use_container_width=True)
+    st.dataframe(desc2.style.format("{:.3f}"), use_container_width=True)
 
     # 3. Correlation
     st.markdown("### 3. Correlation Matrix")
