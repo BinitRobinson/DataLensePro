@@ -60,7 +60,7 @@ with st.sidebar:
     st.title("🔬 DataLens Pro")
     st.markdown("---")
     uploaded   = st.file_uploader("Upload CSV", type=["csv"])
-    use_sample = st.checkbox("Use sample dataset", value=(uploaded is None))
+    use_sample = st.checkbox("Use sample dataset", value=(uploaded is None), key="use_sample")
     st.markdown("---")
     st.caption("Streamlit · Plotly · SciPy")
 
@@ -126,13 +126,13 @@ with t1:
     ca, cb = st.columns(2)
     with ca:
         miss_strat  = st.selectbox("Missing values", [
-            "Leave as-is", "Drop rows", "Fill mean", "Fill median", "Forward fill"])
-        drop_dupes  = st.checkbox("Remove duplicates", value=True)
+            "Leave as-is", "Drop rows", "Fill mean", "Fill median", "Forward fill"], key="miss_strat")
+        drop_dupes  = st.checkbox("Remove duplicates", value=True, key="drop_dupes")
     with cb:
-        std_cols    = st.checkbox("Standardize column names", value=True)
-        neg_cols    = st.multiselect("Remove rows with negatives in:", nc)
+        std_cols    = st.checkbox("Standardize column names", value=True, key="std_cols")
+        neg_cols    = st.multiselect("Remove rows with negatives in:", nc, key="neg_cols")
 
-    if st.button("Apply cleaning", type="primary"):
+    if st.button("Apply cleaning", type="primary", key="apply_clean"):
         df_c = df_raw.copy()
         if std_cols:
             df_c.columns = [c.strip().lower().replace(" ","_") for c in df_c.columns]
@@ -233,8 +233,8 @@ with t3:
         st.warning("Need ≥ 2 numeric columns."); st.stop()
 
     c1,c2 = st.columns(2)
-    method  = c1.selectbox("Method", ["pearson","spearman","kendall"])
-    min_r   = c2.slider("Highlight |r| ≥", 0.0, 1.0, 0.5, 0.05)
+    method  = c1.selectbox("Method", ["pearson","spearman","kendall"], key="corr_method")
+    min_r   = c2.slider("Highlight |r| ≥", 0.0, 1.0, 0.5, 0.05, key="corr_min_r")
 
     corr_mat = df_raw[nc].corr(method=method).round(3)
 
@@ -294,9 +294,9 @@ with t4:
     st.subheader("📉 Trend Detection")
 
     c1,c2,c3 = st.columns(3)
-    selected = c1.multiselect("Columns", nc, default=nc[:4])
-    show_ci  = c2.checkbox("95% CI bands", value=True)
-    roll_win = c3.slider("Rolling window", 2, min(30, max(3,len(df_raw)//5)), 5)
+    selected = c1.multiselect("Columns", nc, default=nc[:4], key="trend_cols")
+    show_ci  = c2.checkbox("95% CI bands", value=True, key="trend_ci")
+    roll_win = c3.slider("Rolling window", 2, min(30, max(3,len(df_raw)//5)), 5, key="roll_win")
 
     if not selected:
         st.info("Select at least one column."); st.stop()
@@ -382,9 +382,9 @@ with t5:
     st.subheader("🚨 Outlier Detection")
 
     c1,c2,c3 = st.columns(3)
-    out_method = c1.radio("Method", ["Z-Score","IQR","Both"], horizontal=True)
-    z_thresh   = c2.slider("Z threshold", 1.5, 4.0, 2.5, 0.1)
-    out_cols   = c3.multiselect("Columns", nc, default=nc)
+    out_method = c1.radio("Method", ["Z-Score","IQR","Both"], horizontal=True, key="out_method")
+    z_thresh   = c2.slider("Z threshold", 1.5, 4.0, 2.5, 0.1, key="z_thresh")
+    out_cols   = c3.multiselect("Columns", nc, default=nc, key="out_cols")
 
     if not out_cols: st.info("Select columns."); st.stop()
 
@@ -467,10 +467,10 @@ with t6:
     st.subheader("📄 EDA Report Generator")
 
     c1,c2 = st.columns(2)
-    analyst = c1.text_input("Analyst name", "Data Analyst")
-    project = c2.text_input("Project name", "Business Dataset")
+    analyst = c1.text_input("Analyst name", "Data Analyst", key="analyst")
+    project = c2.text_input("Project name", "Business Dataset", key="project")
 
-    if not st.button("🚀 Generate Report", type="primary"):
+    if not st.button("🚀 Generate Report", type="primary", key="gen_report"):
         st.info("Click **Generate Report** to run all analyses and produce a summary.")
         st.stop()
 
